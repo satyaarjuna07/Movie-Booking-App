@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign Up</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif;}
+body{background:#121212;color:white;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px;}
+.container{background:#1f1f1f;padding:40px;border-radius:20px;width:100%;max-width:400px;box-shadow:0 0 20px rgba(0,0,0,0.4);}
+h1{text-align:center;margin-bottom:30px;color:#e50914;}
+.form-group{margin-bottom:20px;}
+label{display:block;margin-bottom:8px;font-weight:bold;}
+input{width:100%;padding:12px;border:none;border-radius:8px;background:#2a2a2a;color:white;font-size:14px;}
+input:focus{outline:none;background:#333;}
+.btn{width:100%;padding:12px;background:#e50914;color:white;border:none;border-radius:8px;cursor:pointer;font-size:16px;font-weight:bold;margin-top:20px;}
+.btn:hover{background:#ff2430;}
+.login-link{text-align:center;margin-top:20px;}
+.login-link a{color:#00c853;text-decoration:none;}
+.error{color:#ff1744;margin-bottom:10px;font-size:14px;}
+.success{color:#00c853;margin-bottom:10px;font-size:14px;}
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>🎬 Create Account</h1>
+    <div id="message"></div>
+    <form id="signupForm" onsubmit="handleSignup(event)">
+        <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" required>
+        </div>
+        <div class="form-group">
+            <label for="phone">Phone</label>
+            <input type="tel" id="phone" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" required>
+        </div>
+        <div class="form-group">
+            <label for="confirm">Confirm Password</label>
+            <input type="password" id="confirm" required>
+        </div>
+        <button type="submit" class="btn">Sign Up</button>
+    </form>
+    <div class="login-link">
+        Already have account? <a href="login.html">Login</a>
+    </div>
+</div>
+<script>
+function handleSignup(event) {
+    event.preventDefault();
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const phone = document.getElementById('phone').value;
+    const password = document.getElementById('password').value;
+    const confirm = document.getElementById('confirm').value;
+    const messageDiv = document.getElementById('message');
+    
+    if (password !== confirm) {
+        messageDiv.innerHTML = '<div class="error">❌ Passwords do not match!</div>';
+        return;
+    }
+    
+    let users = JSON.parse(localStorage.getItem('users')) || [];
+    if (users.find(u => u.email === email)) {
+        messageDiv.innerHTML = '<div class="error">❌ Email already registered!</div>';
+        return;
+    }
+    
+    users.push({id: Date.now(), name, email, phone, password});
+    localStorage.setItem('users', JSON.stringify(users));
+    
+    messageDiv.innerHTML = '<div class="success">✅ Account created! Redirecting...</div>';
+    setTimeout(() => {window.location.href = 'login.html';}, 2000);
+}
+</script>
+</body>
+</html>
