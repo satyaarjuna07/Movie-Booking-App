@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #121212;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: #1f1f1f;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+            border: 2px solid #e50914;
+        }
+
+        .success-icon {
+            font-size: 80px;
+            color: #00c853;
+            margin-bottom: 20px;
+            animation: bounce 0.6s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        h1 {
+            margin-bottom: 15px;
+            font-size: 32px;
+            color: #fff;
+        }
+
+        .message {
+            color: #ccc;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        .booking-card {
+            background: #2a2a2a;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: left;
+            margin-bottom: 30px;
+            border-left: 4px solid #e50914;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #444;
+        }
+
+        .row:last-child {
+            border-bottom: none;
+        }
+
+        .label {
+            font-weight: bold;
+            color: #ccc;
+        }
+
+        .value {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .status {
+            color: #00c853;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            min-width: 150px;
+            display: inline-block;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .home-btn {
+            background: #e50914;
+            color: white;
+        }
+
+        .home-btn:hover {
+            background: #ff1f2d;
+            transform: translateY(-2px);
+        }
+
+        .booking-btn {
+            background: #00c853;
+            color: black;
+        }
+
+        .booking-btn:hover {
+            background: #00a844;
+            transform: translateY(-2px);
+        }
+
+        .ticket-btn {
+            background: #9c27b0;
+            color: white;
+        }
+
+        .ticket-btn:hover {
+            background: #b229d4;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+            }
+            h1 {
+                font-size: 24px;
+            }
+            .btn-group {
+                flex-direction: column;
+            }
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="success-icon">✅</div>
+
+        <h1>Booking Confirmed!</h1>
+
+        <p class="message">
+            Your movie ticket has been booked successfully.
+            Please show your QR ticket at the theatre entrance.
+        </p>
+
+        <div class="booking-card">
+            <div class="row">
+                <span class="label">Booking ID</span>
+                <span class="value" id="bookingId">-</span>
+            </div>
+
+            <div class="row">
+                <span class="label">Movie</span>
+                <span class="value">Coolie</span>
+            </div>
+
+            <div class="row">
+                <span class="label">Seats</span>
+                <span class="value" id="seatNumbers">-</span>
+            </div>
+
+            <div class="row">
+                <span class="label">Date & Time</span>
+                <span class="value" id="showDateTime">-</span>
+            </div>
+
+            <div class="row">
+                <span class="label">Theatre</span>
+                <span class="value">Andaman Cinema</span>
+            </div>
+
+            <div class="row">
+                <span class="label">Payment Method</span>
+                <span class="value" id="paymentMethod">-</span>
+            </div>
+
+            <div class="row">
+                <span class="label">Total Amount</span>
+                <span class="value" style="color: #e50914;">₹<span id="amount">0</span></span>
+            </div>
+
+            <div class="row">
+                <span class="label">Status</span>
+                <span class="status">CONFIRMED ✓</span>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <a href="index.html" class="btn home-btn">🏠 Back to Home</a>
+            <a href="my-bookings.html" class="btn booking-btn">🎟 My Bookings</a>
+            <a href="ticket.html" class="btn ticket-btn">🎫 View Ticket</a>
+        </div>
+    </div>
+
+    <script>
+        const seats = JSON.parse(localStorage.getItem("selectedSeats")) || [];
+        const ticketAmount = parseInt(localStorage.getItem("ticketAmount")) || 0;
+        const foodAmount = parseInt(localStorage.getItem("foodTotal")) || 0;
+        const payment = localStorage.getItem("paymentMethod") || "UPI";
+        const totalAmount = ticketAmount + foodAmount;
+
+        const bookingId = "AMT" + Math.floor(100000 + Math.random() * 900000);
+
+        document.getElementById("bookingId").innerText = bookingId;
+        document.getElementById("seatNumbers").innerText = seats.length > 0 ? seats.join(", ") : "Not selected";
+        document.getElementById("paymentMethod").innerText = payment;
+        document.getElementById("amount").innerText = totalAmount;
+
+        const today = new Date();
+        const dateStr = today.toLocaleDateString('en-IN');
+        const timeStr = "07:00 PM";
+        document.getElementById("showDateTime").innerText = dateStr + " • " + timeStr;
+
+        const booking = {
+            bookingId: bookingId,
+            movie: "Coolie",
+            seats: seats,
+            payment: payment,
+            ticketAmount: ticketAmount,
+            foodAmount: foodAmount,
+            totalAmount: totalAmount,
+            status: "CONFIRMED",
+            date: today.toLocaleString('en-IN'),
+            showDate: dateStr,
+            showTime: timeStr
+        };
+
+        let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+        bookings.push(booking);
+        localStorage.setItem("bookings", JSON.stringify(bookings));
+        localStorage.setItem("currentBooking", JSON.stringify(booking));
+    </script>
+
+</body>
+
+</html>
