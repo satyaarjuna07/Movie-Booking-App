@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Ticket</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #121212;
+            color: white;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #e50914 0%, #d40812 100%);
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            border-radius: 10px;
+        }
+
+        .ticket {
+            max-width: 600px;
+            margin: auto;
+            background: #1f1f1f;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(229, 9, 20, 0.3);
+        }
+
+        .ticket-top {
+            background: linear-gradient(135deg, #e50914 0%, #d40812 100%);
+            padding: 30px 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .ticket-top h2 {
+            margin-bottom: 5px;
+            font-size: 28px;
+        }
+
+        .ticket-top p {
+            color: #f0f0f0;
+            font-size: 14px;
+        }
+
+        .ticket-body {
+            padding: 25px;
+        }
+
+        .ticket-row {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #333;
+            padding: 12px 0;
+            font-size: 16px;
+        }
+
+        .ticket-row:last-child {
+            border-bottom: none;
+        }
+
+        .label {
+            font-weight: bold;
+            color: #ccc;
+        }
+
+        .value {
+            color: #fff;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .qr-section {
+            text-align: center;
+            padding: 30px 20px;
+            background: #2a2a2a;
+            border-top: 1px solid #333;
+        }
+
+        .qr-section p {
+            margin-bottom: 15px;
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        #qrcode {
+            display: inline-block;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            padding: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            min-width: 150px;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .download-btn {
+            background: #00c853;
+            color: black;
+        }
+
+        .download-btn:hover {
+            background: #00a844;
+            transform: translateY(-2px);
+        }
+
+        .back-btn {
+            background: #e50914;
+            color: white;
+        }
+
+        .back-btn:hover {
+            background: #ff1f2d;
+            transform: translateY(-2px);
+        }
+
+        .status {
+            color: #00c853;
+            font-weight: bold;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .button-group {
+                display: none;
+            }
+            .header {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .button-group {
+                flex-direction: column;
+            }
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        🎬 Digital Movie Ticket
+    </div>
+
+    <div class="ticket">
+        <div class="ticket-top">
+            <h2>🎫 Booking Confirmed</h2>
+            <p>E-Ticket</p>
+        </div>
+
+        <div class="ticket-body">
+            <div class="ticket-row">
+                <span class="label">Booking ID</span>
+                <span class="value" id="bookingId">-</span>
+            </div>
+
+            <div class="ticket-row">
+                <span class="label">Movie</span>
+                <span class="value">Coolie</span>
+            </div>
+
+            <div class="ticket-row">
+                <span class="label">Seats</span>
+                <span class="value" id="seatNumbers">-</span>
+            </div>
+
+            <div class="ticket-row">
+                <span class="label">Date</span>
+                <span class="value" id="showDate">-</span>
+            </div>
+
+            <div class="ticket-row">
+                <span class="label">Time</span>
+                <span class="value">07:00 PM</span>
+            </div>
+
+            <div class="ticket-row">
+                <span class="label">Theatre</span>
+                <span class="value">Andaman Cinema</span>
+            </div>
+
+            <div class="ticket-row">
+                <span class="label">Payment Method</span>
+                <span class="value" id="paymentMethod">-</span>
+            </div>
+
+            <div class="ticket-row">
+                <span class="label">Amount</span>
+                <span class="value" style="color: #e50914;">₹<span id="amount">0</span></span>
+            </div>
+
+            <div class="ticket-row">
+                <span class="label">Status</span>
+                <span class="value status">CONFIRMED ✓</span>
+            </div>
+        </div>
+
+        <div class="qr-section">
+            <p>📱 Scan to verify your ticket at theatre</p>
+            <div id="qrcode"></div>
+        </div>
+    </div>
+
+    <div class="button-group">
+        <button class="btn download-btn" onclick="window.print()">
+            📥 Download / Print Ticket
+        </button>
+        <button class="btn back-btn" onclick="window.location.href='index.html'">
+            🏠 Back to Home
+        </button>
+    </div>
+
+    <script>
+        const booking = JSON.parse(localStorage.getItem("currentBooking")) || {};
+        const seats = booking.seats || [];
+        const totalAmount = booking.totalAmount || 0;
+        const payment = booking.payment || "UPI";
+        const bookingId = booking.bookingId || "AMT000000";
+        const showDate = booking.showDate || new Date().toLocaleDateString('en-IN');
+
+        document.getElementById("bookingId").innerText = bookingId;
+        document.getElementById("seatNumbers").innerText = seats.length > 0 ? seats.join(", ") : "Not selected";
+        document.getElementById("showDate").innerText = showDate;
+        document.getElementById("paymentMethod").innerText = payment;
+        document.getElementById("amount").innerText = totalAmount;
+
+        const qrData = `Booking ID: ${bookingId}\nMovie: Coolie\nSeats: ${seats.join(", ")}\nAmount: ₹${totalAmount}\nDate: ${showDate}\nStatus: CONFIRMED`;
+
+        try {
+            new QRCode(document.getElementById("qrcode"), {
+                text: qrData,
+                width: 200,
+                height: 200,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        } catch (error) {
+            console.error("Error generating QR code:", error);
+            document.getElementById("qrcode").innerText = "QR Code generation failed";
+        }
+    </script>
+
+</body>
+
+</html>
