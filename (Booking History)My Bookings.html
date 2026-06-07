@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #121212;
+            color: white;
+        }
+
+        header {
+            background: linear-gradient(135deg, #e50914 0%, #d40812 100%);
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            padding: 30px 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #00c853;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .back-link:hover {
+            color: #00a844;
+        }
+
+        .page-title {
+            font-size: 28px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e50914;
+            padding-bottom: 10px;
+        }
+
+        .booking-item {
+            background: #1f1f1f;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 5px solid #e50914;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: 0.3s;
+        }
+
+        .booking-item:hover {
+            box-shadow: 0 6px 12px rgba(229, 9, 20, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .booking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+
+        .movie-name {
+            font-size: 22px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .booking-status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            background: #00c853;
+            color: black;
+        }
+
+        .booking-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .detail-item {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .detail-label {
+            color: #999;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            color: #fff;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 60px 20px;
+            background: #1f1f1f;
+            border-radius: 12px;
+        }
+
+        .empty h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: #ccc;
+        }
+
+        .empty p {
+            color: #888;
+            margin-bottom: 20px;
+        }
+
+        .empty-btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #e50914;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .empty-btn:hover {
+            background: #ff1f2d;
+        }
+
+        @media (max-width: 768px) {
+            .booking-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .booking-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        🎬 My Bookings
+    </header>
+
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to Home</a>
+
+        <h1 class="page-title">🎟 My Bookings</h1>
+
+        <div id="bookingsList"></div>
+    </div>
+
+    <script>
+        const bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+        const bookingsList = document.getElementById("bookingsList");
+
+        if (bookings.length === 0) {
+            bookingsList.innerHTML = `
+                <div class="empty">
+                    <h2>No bookings yet</h2>
+                    <p>Start booking your favorite movies now!</p>
+                    <a href="movie-details.html" class="empty-btn">Book Your First Movie</a>
+                </div>
+            `;
+        } else {
+            bookings.forEach(booking => {
+                const bookingHTML = `
+                    <div class="booking-item">
+                        <div class="booking-header">
+                            <span class="movie-name">${booking.movie}</span>
+                            <span class="booking-status">${booking.status}</span>
+                        </div>
+                        <div class="booking-details">
+                            <div class="detail-item">
+                                <div class="detail-label">Booking ID</div>
+                                <div class="detail-value">${booking.bookingId}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Seats</div>
+                                <div class="detail-value">${booking.seats.join(", ")}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Show Date & Time</div>
+                                <div class="detail-value">${booking.showDate} • ${booking.showTime}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Payment Method</div>
+                                <div class="detail-value">${booking.payment}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Total Amount</div>
+                                <div class="detail-value" style="color: #e50914;">₹${booking.totalAmount}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Booked On</div>
+                                <div class="detail-value">${booking.date}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                bookingsList.innerHTML += bookingHTML;
+            });
+        }
+    </script>
+
+</body>
+
+</html>
